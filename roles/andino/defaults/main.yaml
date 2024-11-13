@@ -1,0 +1,3 @@
+---
+andino_github_repo: https://github.com/Ekumen-OS/andino.git
+andino_workspace_path: "/home/{{ ansible_user }}/andino_ws"

@@ -1,0 +1,38 @@
+- hosts:
+    - andino
+  connection: local
+  roles:
+    - common
+    - ros2
+    - andino
+
+- hosts:
+    - andino
+  connection: local
+  tasks:
+    - name: Update all remaining packages
+      apt:
+        upgrade: dist
+        force: true
+      become: true
+      tags: update
+
+    - name: Autoremove apt
+      apt:
+        autoremove: true
+        purge: true
+      become: true
+      tags: update
+
+    - name: Autoclean apt
+      apt:
+        autoclean: true
+      become: true
+      tags: update
+
+    - name: Display post install message
+      debug:
+        msg:
+          - "To start using your robot, make sure to either:"
+          - "- reboot you robot with `sudo reboot` or"
+          - "- source ~/.bashrc"

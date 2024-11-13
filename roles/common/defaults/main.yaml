@@ -1,0 +1,5 @@
+ansible_user: "{{ lookup('pipe', 'whoami') }}"
+
+target_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' if ansible_architecture == 'aarch64' else 'armhf' if ansible_architecture == 'armv7l' else ansible_architecture }}"
+
+ros2_distribution: "{{ 'jazzy' if ansible_distribution_release == 'noble' }}"

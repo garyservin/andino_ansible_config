@@ -1,0 +1,10 @@
+---
+# defaults file for ros2
+
+ros2_gpg_key:
+  url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
+  dest: /usr/share/keyrings/ros-archive-keyring.gpg
+
+ros2_repository_url: http://packages.ros.org/ros2/ubuntu
+
+ros2_configuration: ros-base

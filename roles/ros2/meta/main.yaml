@@ -1,0 +1,21 @@
+galaxy_info:
+  role_name: ros2
+  author: Gary Servin
+  description: An Ansible Role that installs ROS 2 (Robot Operating System) on Ubuntu
+  # Based on https://github.com/rarrais/ansible-role-ros2
+
+  license: Apache 2.0
+
+  min_ansible_version: 2.6
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - noble
+
+  galaxy_tags:
+    - ros2
+    - ubuntu
+    - robotics
+
+dependencies: []

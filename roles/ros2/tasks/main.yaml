@@ -1,0 +1,95 @@
+---
+# From: https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html
+
+#- name: Ensure a locale exists
+#  community.general.locale_gen:
+#    name: en_US.UTF-8
+#    state: present
+
+#sudo apt update && sudo apt install locales
+#sudo locale-gen en_US en_US.UTF-8
+#sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+#export LANG=en_US.UTF-8
+
+# sudo apt update && sudo apt install curl -y
+- name: Make sure dependencies are intalled
+  apt:
+    pkg:
+      - curl
+      - gnupg2
+      - lsb-release
+    state: present
+    update_cache: yes
+  become: true
+
+# sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+- name: Add the ROS 2 GPG key
+  get_url:
+    url: "{{ ros2_gpg_key.url }}"
+    dest: "{{ ros2_gpg_key.dest }}"
+  become: true
+
+#echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+- name: Configure APT repository for ROS 2
+  apt_repository:
+    repo: "deb [arch={{ target_arch }} signed-by={{ ros2_gpg_key.dest }}] {{ ros2_repository_url }} {{ ansible_distribution_release }} main"
+    state: present
+    filename: ros2
+  become: true
+
+# sudo apt update && sudo apt install ros-dev-tools
+- name: Install ROS 2 dev tools
+  apt:
+    name: ros-dev-tools
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+# sudo apt install ros-jazzy-robot
+- name: Install ROS 2
+  apt:
+    name: "{{ 'ros-' + ros2_distribution + '-' + ros2_configuration }}"
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+# source /opt/ros/jazzy/setup.bash
+- name: "Setup .bashrc with /opt/ros/{{ ros2_distribution }}/setup.bash"
+  lineinfile:
+    path: "/home/{{ ansible_user }}/.bashrc"
+    line: source "/opt/ros/{{ ros2_distribution }}/setup.bash"
+
+# sudo apt install python3-argcomplete
+- name: Install argcomplete (optional)
+  apt:
+    name: python3-argcomplete
+  become: true
+
+- name: Update .bashrc with autocomplete configuration
+  blockinfile:
+    path: "/home/{{ ansible_user }}/.bashrc"
+    content: |
+      eval "$(register-python-argcomplete{{ '3' if ros2_distribution == 'humble' }} ros2)"
+      eval "$(register-python-argcomplete{{ '3' if ros2_distribution == 'humble' }} colcon)"
+
+- name: Install colcon and extensions to build packages
+  apt:
+    pkg:
+      - python3-colcon-common-extensions
+      - python3-colcon-clean
+  become: true
+
+- name: Initialize rosdep
+  command: rosdep init
+  register: result
+  become: true
+  failed_when:
+    - '"default sources list file already exists" not in result.stderr'
+    - result.rc != 0
+  changed_when:
+    - '"default sources list file already exists" in result.stderr'
+    - result.rc == 2
+
+- name: Update rosdep
+  command: rosdep update
