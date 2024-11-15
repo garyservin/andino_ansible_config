@@ -1,3 +1,13 @@
 ---
 andino_github_repo: https://github.com/Ekumen-OS/andino.git
 andino_workspace_path: "/home/{{ ansible_user }}/andino_ws"
+
+arduino_serial:
+  id_vendor: 1a86
+  id_product: 7523
+  name: ttyUSB_ARDUINO
+
+lidar_serial:
+  id_vendor: 10c4
+  id_product: ea60
+  name: ttyUSB_LIDAR

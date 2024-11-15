@@ -15,4 +15,6 @@ galaxy_info:
   galaxy_tags:
     - andino
 
-dependencies: []
+dependencies:
+  - common
+  - ros2

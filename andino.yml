@@ -2,8 +2,6 @@
     - andino
   connection: local
   roles:
-    - common
-    - ros2
     - andino
 
 - hosts:
@@ -30,9 +28,12 @@
       become: true
       tags: update
 
+    - name: Display warnings
+      fail:
+        msg: "{{ warnings }}"
+      ignore_errors: true
+      when: warnings is defined and warnings | length > 0
+
     - name: Display post install message
       debug:
-        msg:
-          - "To start using your robot, make sure to either:"
-          - "- reboot you robot with `sudo reboot` or"
-          - "- source ~/.bashrc"
+        msg: "To start using your robot, make sure to rebot it with: `sudo reboot`"
