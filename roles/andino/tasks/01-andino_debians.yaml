@@ -1,0 +1,19 @@
+---
+- name: Install Andino packages
+  apt:
+    name: "{{ 'ros-' + ros2_distribution + '-andino-bringup' }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Install extra packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    cache_valid_time: 3600
+  vars:
+    packages: "{{ 'ros-' + ros2_distribution + '-' + item }}"
+  with_items: "{{ extra_ros_packages }}"
+  when: (extra_ros_packages is defined) and (extra_ros_packages is not none)
+  become: true
