@@ -1,0 +1,41 @@
+name: Ansible Playbook Test for the andino_ansible_config repository
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Ansible
+      run: |
+        sudo apt update && sudo apt install -y ansible
+
+    - name: Install dependencies
+      run: |
+        if [ -f requirements.yml ]; then
+          ansible-galaxy install -r requirements.yml
+        fi
+
+    - name: Run Ansible Playbook
+      run: ansible-playbook playbook.yml -i inventory --skip-tags 'skip_ci'
+
+    - name: Validate Playbook Syntax
+      run: ansible-playbook playbook.yml --syntax-check

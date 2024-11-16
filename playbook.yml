@@ -1,11 +1,11 @@
 - hosts:
-    - andino
+    - localhost
   connection: local
   roles:
     - andino
 
 - hosts:
-    - andino
+    - localhost
   connection: local
   tasks:
     - name: Update all remaining packages
@@ -20,7 +20,7 @@
         autoremove: true
         purge: true
       become: true
-      tags: update
+      tags: update, skip_ci
 
     - name: Autoclean apt
       apt:

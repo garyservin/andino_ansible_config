@@ -1,12 +1,23 @@
 ---
 # From: https://github.com/Ekumen-OS/andino/tree/jazzy?tab=readme-ov-file#build-from-source
+- name: Install dependencies
+  apt:
+    pkg:
+      - python3-rosdep
+      - python3-catkin-pkg
+      - python3-catkin-pkg-modules
+      - python3-rospkg-modules
+      - python3-rospkg
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
 
 - name: Create the Andino workspace
   file:
     dest: "{{ andino_workspace_path }}/src"
     state: directory
     owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
 
 - name: Clone the Andino Github repository
   git:
