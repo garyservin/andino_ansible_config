@@ -29,6 +29,10 @@
     warnings: "{{ warnings + ['RPi camera not detected'] }}"
   when: "'supported=1 detected=1' not in camera_state"
 
+- name: Configure RPi camera if it isn't detected
+  command: sudo raspi-config nonint do_camera 1
+  when: "'supported=1 detected=1' not in camera_state"
+
 - name: Configure serial port names for Arduino and Lidar
   blockinfile:
     path: /etc/udev/rules.d/10-usb-serial.rules

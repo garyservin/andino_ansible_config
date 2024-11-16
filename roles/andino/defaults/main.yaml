@@ -2,6 +2,11 @@
 andino_github_repo: https://github.com/Ekumen-OS/andino.git
 andino_workspace_path: "/home/{{ ansible_user }}/andino_ws"
 
+install_from_sources: "{{ ('True' if ros2_distribution == 'jazzy' else 'False') | bool }}"
+
+extra_ros_packages: []
+extra_sources: []
+
 arduino_serial:
   id_vendor: 1a86
   id_product: 7523

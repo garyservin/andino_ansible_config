@@ -1,3 +1,7 @@
 ---
 - import_tasks: 00-andino_hardware.yaml
-- import_tasks: 01-andino_sources.yaml
+  tags: skip_ci
+- import_tasks: 01-andino_debians.yaml
+  when: not install_from_sources
+- import_tasks: 02-andino_sources.yaml
+  when: install_from_sources or extra_sources | length > 0

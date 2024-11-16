@@ -11,10 +11,21 @@
 - name: Clone the Andino Github repository
   git:
     repo: "{{ andino_github_repo }}"
-    dest: "{{ andino_workspace_path }}/src"
+    dest: "{{ andino_workspace_path }}/src/andino"
     version: "{{ ros2_distribution }}"
     accept_hostkey: true
     single_branch: true
+  when: install_from_sources
+
+- name: Install extra source repositories
+  git:
+    repo: "{{ item.url }}"
+    dest: "{{ andino_workspace_path }}/src"
+    version: "{{ item.branch }}"
+    accept_hostkey: true
+    single_branch: true
+  with_items: "{{ extra_sources }}"
+  when: extra_sources | length > 0
 
 - name: Install Andino dependencies via rosdep
   shell: |
