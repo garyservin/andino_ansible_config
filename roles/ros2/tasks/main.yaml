@@ -1,16 +1,6 @@
 ---
 # From: https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html
 
-#- name: Ensure a locale exists
-#  community.general.locale_gen:
-#    name: en_US.UTF-8
-#    state: present
-
-#sudo apt update && sudo apt install locales
-#sudo locale-gen en_US en_US.UTF-8
-#sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-#export LANG=en_US.UTF-8
-
 # sudo apt update && sudo apt install curl -y
 - name: Make sure dependencies are intalled
   apt:
@@ -19,7 +9,7 @@
       - gnupg2
       - lsb-release
     state: present
-    update_cache: yes
+    update_cache: true
   become: true
 
 # sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
@@ -27,12 +17,12 @@
   get_url:
     url: "{{ ros2_gpg_key.url }}"
     dest: "{{ ros2_gpg_key.dest }}"
+    mode: "0644"
   become: true
 
-#echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
 - name: Configure APT repository for ROS 2
   apt_repository:
-    repo: "deb [arch={{ target_arch }} signed-by={{ ros2_gpg_key.dest }}] {{ ros2_repository_url }} {{ ansible_distribution_release }} main"
+    repo: "deb [arch={{ common_target_arch }} signed-by={{ ros2_gpg_key.dest }}] {{ ros2_repository_url }} {{ ansible_distribution_release }} main"
     state: present
     filename: ros2
   become: true
@@ -42,7 +32,7 @@
   apt:
     name: ros-dev-tools
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   become: true
 
@@ -50,12 +40,12 @@
 - name: Install ROS 2
   apt:
     name: "{{ 'ros-' + ros2_distribution + '-' + ros2_configuration }}"
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   become: true
 
 # source /opt/ros/jazzy/setup.bash
-- name: "Setup .bashrc with /opt/ros/{{ ros2_distribution }}/setup.bash"
+- name: Setup .bashrc to source the installed ROS workspace
   lineinfile:
     path: "/home/{{ ansible_user }}/.bashrc"
     line: source "/opt/ros/{{ ros2_distribution }}/setup.bash"
@@ -93,3 +83,4 @@
 
 - name: Update rosdep
   command: rosdep update
+  changed_when: true

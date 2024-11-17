@@ -1,0 +1,7 @@
+profile: shared
+
+skip_list:
+  - fqcn-builtins
+
+exclude_paths:
+  - .*

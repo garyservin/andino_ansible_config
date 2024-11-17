@@ -8,7 +8,7 @@
       - v4l-utils
       - raspi-config
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   become: true
 
@@ -16,65 +16,68 @@
   user:
     name: "{{ ansible_user }}"
     groups: "dialout,plugdev,video"
-    append: yes
+    append: true
   become: true
 
 - name: Read RPi camera status
-  shell: vcgencmd get_camera
+  command: vcgencmd get_camera
   register: camera_state
   changed_when: false
 
 - name: Check if RPi camera is installed and working
   set_fact:
-    warnings: "{{ warnings + ['RPi camera not detected'] }}"
+    common_warnings: "{{ common_warnings + ['RPi camera not detected'] }}"
   when: "'supported=1 detected=1' not in camera_state"
 
 - name: Configure RPi camera if it isn't detected
   command: sudo raspi-config nonint do_camera 1
   when: "'supported=1 detected=1' not in camera_state"
+  changed_when: true
 
 - name: Configure serial port names for Arduino and Lidar
-  blockinfile:
-    path: /etc/udev/rules.d/10-usb-serial.rules
-    create: true
-    content: |
-        SUBSYSTEM=="tty", ATTRS{idProduct}=="{{ arduino_serial.id_product }}", ATTRS{idVendor}=="{{ arduino_serial.id_vendor }}", SYMLINK+="ttyUSB_ARDUINO"
-        SUBSYSTEM=="tty", ATTRS{idProduct}=="{{ lidar_serial.id_product }}", ATTRS{idVendor}=="{{ lidar_serial.id_vendor }}", SYMLINK+="ttyUSB_LIDAR"
+  template:
+    src: 10-usb-serial.rules.j2
+    dest: /etc/udev/rules.d/10-usb-serial.rules
+    mode: u=rw,g=r,o=r
   become: true
   register: usb_serial_rules
 
 - name: "Reload udev rules"
   shell: udevadm control --reload-rules && udevadm trigger
   become: true
-  when: usb_serial_rules.changed
+  when: usb_serial_rules.changed  # noqa: no-handler
+  changed_when: true
 
 - name: Verify custom Arduino serial port exists
   stat:
-    path: "/dev/{{ arduino_serial.name }}"
-  register: arduino_serial_result
-  failed_when: not arduino_serial_result.stat.exists
+    path: "/dev/{{ andino_arduino_serial.name }}"
+  register: andino_arduino_serial_result
+  failed_when: not andino_arduino_serial_result.stat.exists
 
 - name: Verify custom Lidar serial port exists
   stat:
-    path: "/dev/{{ lidar_serial.name }}"
-  register: lidar_serial_result
-  failed_when: not lidar_serial_result.stat.exists
+    path: "/dev/{{ andino_lidar_serial.name }}"
+  register: andino_lidar_serial_result
+  failed_when: not andino_lidar_serial_result.stat.exists
 
 - name: Install PlatformIO dependencies
   apt:
     name: python3-venv
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   become: true
 
 - name: Download PlatformIO installer
-  ansible.builtin.get_url:
+  get_url:
     url: https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
     dest: /tmp/get-platformio.py
+    mode: "0775"
 
 - name: Install PlatformIO
   command: python3 /tmp/get-platformio.py
+  register: pio_install
+  changed_when: pio_install.rc == 0
 
 - name: Add PlatformIO to the PATH
   lineinfile:

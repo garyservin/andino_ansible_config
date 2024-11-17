@@ -15,32 +15,33 @@ concurrency:
 
 jobs:
   ansible_deploy_test:
+    name: Ansible deploy Test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install Ansible
-      run: |
-        sudo apt update && sudo apt install -y ansible
+      - name: Install Ansible
+        run: |
+          sudo apt update && sudo apt install -y ansible
 
-    - name: Install dependencies
-      run: |
-        if [ -f requirements.yml ]; then
-          ansible-galaxy install -r requirements.yml
-        fi
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.yml ]; then
+            ansible-galaxy install -r requirements.yml
+          fi
 
-    - name: Run Ansible Playbook
-      run: ansible-playbook playbook.yml -i inventory --skip-tags 'skip_ci'
+      - name: Run Ansible Playbook
+        run: ansible-playbook local.yml -i inventory --skip-tags 'skip_ci'
 
-    - name: Validate Playbook Syntax
-      run: ansible-playbook playbook.yml --syntax-check
+      - name: Validate Playbook Syntax
+        run: ansible-playbook local.yml --syntax-check
