@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  ansible_deploy_test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
