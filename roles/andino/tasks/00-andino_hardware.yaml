@@ -59,3 +59,24 @@
     path: "/dev/{{ lidar_serial.name }}"
   register: lidar_serial_result
   failed_when: not lidar_serial_result.stat.exists
+
+- name: Install PlatformIO dependencies
+  apt:
+    name: python3-venv
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Download PlatformIO installer
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
+    dest: /tmp/get-platformio.py
+
+- name: Install PlatformIO
+  command: python3 /tmp/get-platformio.py
+
+- name: Add PlatformIO to the PATH
+  lineinfile:
+    path: "/home/{{ ansible_user }}/.bashrc"
+    line: "export PATH=$PATH:/home/{{ ansible_user }}/.platformio/penv/bin"
