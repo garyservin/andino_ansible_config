@@ -1,7 +1,12 @@
 ---
-- import_tasks: 00-andino_hardware.yaml
+- name: Run Andino Hardware tasks
+  import_tasks: 00-andino_hardware.yaml
   tags: skip_ci
-- import_tasks: 01-andino_debians.yaml
-  when: not install_from_sources
-- import_tasks: 02-andino_sources.yaml
-  when: install_from_sources or extra_sources | length > 0
+
+- name: Install Andino packages via debians
+  import_tasks: 01-andino_debians.yaml
+  when: not andino_install_from_sources
+
+- name: Install Andino packages from sources
+  import_tasks: 02-andino_sources.yaml
+  when: andino_install_from_sources or andino_extra_sources | length > 0

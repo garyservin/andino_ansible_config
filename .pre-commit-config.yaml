@@ -1,0 +1,13 @@
+repos:
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v24.10.0
+    hooks:
+      - id: ansible-lint
+        name: Ansible-lint
+        description: Run Ansible-lint checks
+        entry: python3 -m ansiblelint -v --force-color --exclude .*
+        language: python
+        pass_filenames: false
+        always_run: true
+        additional_dependencies:
+          - ansible-core>2.13.3

@@ -1,20 +1,16 @@
+---
 galaxy_info:
   role_name: andino
   author: Gary Servin
   description: An Ansible Role that configures and Andino Robot
 
-  license: Apache 2.0
+  license: "Apache 2.0"
 
-  min_ansible_version: 2.6
-
-  platforms:
-  - name: Ubuntu
-    versions:
-    - noble
+  min_ansible_version: "2.6"
 
   galaxy_tags:
     - andino
 
 dependencies:
-  - common
-  - ros2
+  - role: common
+  - role: ros2

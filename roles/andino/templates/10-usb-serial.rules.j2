@@ -1,0 +1,2 @@
+SUBSYSTEM=="tty", ATTRS{idProduct}=="{{ andino_arduino_serial.id_product }}", ATTRS{idVendor}=="{{ andino_arduino_serial.id_vendor }}", SYMLINK+="ttyUSB_ARDUINO"
+SUBSYSTEM=="tty", ATTRS{idProduct}=="{{ andino_lidar_serial.id_product }}", ATTRS{idVendor}=="{{ andino_lidar_serial.id_vendor }}", SYMLINK+="ttyUSB_LIDAR"

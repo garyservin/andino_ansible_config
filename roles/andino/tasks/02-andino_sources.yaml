@@ -1,5 +1,6 @@
 ---
-# From: https://github.com/Ekumen-OS/andino/tree/jazzy?tab=readme-ov-file#build-from-source
+# From:
+# https://github.com/Ekumen-OS/andino/tree/jazzy?tab=readme-ov-file#build-from-source
 - name: Install dependencies
   apt:
     pkg:
@@ -9,7 +10,7 @@
       - python3-rospkg-modules
       - python3-rospkg
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   become: true
 
@@ -18,6 +19,7 @@
     dest: "{{ andino_workspace_path }}/src"
     state: directory
     owner: "{{ ansible_user }}"
+    mode: "0775"
 
 - name: Clone the Andino Github repository
   git:
@@ -26,7 +28,7 @@
     version: "{{ ros2_distribution }}"
     accept_hostkey: true
     single_branch: true
-  when: install_from_sources
+  when: andino_install_from_sources
 
 - name: Install extra source repositories
   git:
@@ -35,8 +37,8 @@
     version: "{{ item.branch }}"
     accept_hostkey: true
     single_branch: true
-  with_items: "{{ extra_sources }}"
-  when: extra_sources | length > 0
+  with_items: "{{ andino_extra_sources }}"
+  when: andino_extra_sources | length > 0
 
 - name: Install Andino dependencies via rosdep
   shell: |

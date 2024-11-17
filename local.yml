@@ -1,10 +1,12 @@
-- hosts:
+- name: Andino play installation
+  hosts:
     - localhost
   connection: local
   roles:
     - andino
 
-- hosts:
+- name: Post-installation play
+  hosts:
     - localhost
   connection: local
   tasks:
@@ -30,9 +32,9 @@
 
     - name: Display warnings
       fail:
-        msg: "{{ warnings }}"
-      ignore_errors: true
-      when: warnings is defined and warnings | length > 0
+        msg: "{{ common_warnings }}"
+      when: common_warnings is defined and common_warnings | length > 0
+      ignore_errors: true  # noqa: ignore-errors
 
     - name: Display post install message
       debug:

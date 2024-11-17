@@ -8,3 +8,9 @@ ros2_gpg_key:
 ros2_repository_url: http://packages.ros.org/ros2/ubuntu
 
 ros2_configuration: ros-base
+
+ros2_distribution_matrix:
+  jammy: humble
+  noble: jazzy
+
+ros2_distribution: "{{ ros2_distribution_matrix[ansible_distribution_release] }}"
