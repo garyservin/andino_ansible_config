@@ -8,6 +8,11 @@ on:
     branches:
       - main
 
+# Cancel previously running PR jobs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ansible_deploy_test:
     runs-on: ${{ matrix.os }}
