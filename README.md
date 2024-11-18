@@ -50,7 +50,7 @@ ansible-pull allows you to pull the latest playbooks and roles from a Git reposi
   1. Run ansible-pull to apply the Ansible configuration from the repository to the robot:
 
   ```bash
-  ansible-pull -U https://github.com/garyservin/andino_ansible_configuration.git -K
+  ansible-pull -U https://github.com/garyservin/andino_ansible_config.git -K
   ```
 
   Explanation of the command:
