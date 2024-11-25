@@ -42,7 +42,7 @@
   become: true
   register: usb_serial_rules
 
-- name: "Reload udev rules"
+- name: "Reload udev rules for serial"
   shell: udevadm control --reload-rules && udevadm trigger
   become: true
   when: usb_serial_rules.changed  # noqa: no-handler
@@ -83,3 +83,17 @@
   lineinfile:
     path: "/home/{{ ansible_user }}/.bashrc"
     line: "export PATH=$PATH:/home/{{ ansible_user }}/.platformio/penv/bin"
+
+- name: Download udev rules for PlatformIO
+  get_url:
+    url: https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules
+    dest: /etc/udev/rules.d/99-platformio-udev.rules
+    mode: u=rw,g=r,o=r
+  become: true
+  register: platformio_rules
+
+- name: "Reload udev rules for platformio"
+  shell: udevadm control --reload-rules && udevadm trigger
+  become: true
+  when: platformio_rules.changed  # noqa: no-handler
+  changed_when: true
